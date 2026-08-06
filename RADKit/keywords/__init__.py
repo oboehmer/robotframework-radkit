@@ -4,6 +4,7 @@
 """Keyword module exports for RADKit Robot Framework library."""
 
 from .connection import ConnectionKeywords
+from .direct import DirectKeywords
 from .execution import ExecutionKeywords
 from .genie import GenieKeywords
 from .inventory import InventoryKeywords
@@ -11,6 +12,7 @@ from .port_forwarding import PortForwardingKeywords
 
 __all__ = [
     "ConnectionKeywords",
+    "DirectKeywords",
     "ExecutionKeywords",
     "GenieKeywords",
     "InventoryKeywords",

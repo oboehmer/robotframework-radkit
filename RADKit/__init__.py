@@ -12,6 +12,7 @@ port forwarding, and Genie-based parsing.
 from RADKit._base import BaseMixin, RADKitLibraryError
 from RADKit.keywords import (
     ConnectionKeywords,
+    DirectKeywords,
     ExecutionKeywords,
     GenieKeywords,
     InventoryKeywords,
@@ -25,6 +26,7 @@ __all__ = ["RADKit", "RADKitLibraryError"]
 class RADKit(
     BaseMixin,
     ConnectionKeywords,
+    DirectKeywords,
     InventoryKeywords,
     ExecutionKeywords,
     PortForwardingKeywords,
@@ -71,13 +73,14 @@ class RADKit(
 
     *** Test Cases ***
     Query Device Inventory
-        RADKit certificate login
+        # identity can also be set via RADKIT_IDENTITY env var
+        RADKit certificate login    identity=user@cisco.com
         RADKit select service    ${SERVICE_SN}
         @{devices}=    RADKit device inventory
         Log Many    @{devices}
 
     Execute Show Version
-        RADKit certificate login
+        RADKit certificate login    identity=user@cisco.com
         RADKit select service    ${SERVICE_SN}
         ${result}=    RADKit execute    show version    devices=router1
         Log    ${result}[router1]
@@ -140,6 +143,8 @@ class RADKit(
         <li><code>RADKit certificate login</code> - Authenticate to RADKit cloud</li>
         <li><code>RADKit disconnect</code> - Disconnect from RADKit cloud</li>
         <li><code>RADKit select service</code> - Connect to a RADKit service</li>
+        <li><code>RADKit service direct</code> - Connect directly to a RADKit service via host/port</li>
+        <li><code>RADKit disconnect direct service</code> - Disconnect direct service connections</li>
         <li><code>RADKit timeout</code> - Set execution timeout</li>
     </ul>
 

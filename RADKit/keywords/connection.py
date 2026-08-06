@@ -70,18 +70,31 @@ class ConnectionKeywords:
                 <li><code>key_path</code>: Path to RADKit certificate private key,
                     defaults to env var RADKIT_KEY_PATH or standard location</li>
                 <li><code>private_key_password</code>: Passphrase for your private key.
-                    Provide via base64-encoded env var
-                    RADKIT_CLIENT_PRIVATE_KEY_PASSWORD_BASE64, cleartext env var
-                    RADKIT_CLIENT_PRIVATE_KEY_PASSWORD, or use Robot Framework's
-                    <code>Secret</code> type.</li>
+                    Can be provided as a Robot Framework <code>Secret</code>
+                    variable, or as the <em>name</em> of an environment variable
+                    containing the password. When not provided, falls back to
+                    env var RADKIT_CLIENT_PRIVATE_KEY_PASSWORD_BASE64 (base64)
+                    or RADKIT_CLIENT_PRIVATE_KEY_PASSWORD (cleartext).</li>
                 <li><code>domain</code>: RADKit domain (defaults to PROD)</li>
             </ul>
 
             <p><strong>Returns:</strong> RADKit client object</p>
 
-            <p><strong>Example:</strong></p>
+            <p><strong>Examples:</strong></p>
             <pre>
-        RADKit certificate login    john@cisco.com
+        # All arguments can also be provided via environment variables
+        # (RADKIT_IDENTITY, RADKIT_CERT_PATH, RADKIT_KEY_PATH, etc.)
+        RADKit certificate login    identity=user@cisco.com
+
+        # Private key password from a named environment variable
+        RADKit certificate login    identity=user@cisco.com
+        ...    private_key_password=MY_PK_PASSWORD_ENV_VAR
+
+        # Private key password using Robot Framework Secret variable
+        # (define in *** Variables *** section)
+        # ${PK_PASSWORD: Secret}    %{MY_PK_PASSWORD_ENV_VAR}
+        RADKit certificate login    identity=user@cisco.com
+        ...    private_key_password=${PK_PASSWORD}
             </pre>
         """
         identity = identity or os.environ.get("RADKIT_IDENTITY")
@@ -145,20 +158,16 @@ class ConnectionKeywords:
             if Secret is not None and isinstance(passwd, Secret):
                 return str(passwd.value)
 
-            if isinstance(passwd, str) and passwd in os.environ:
-                logger.warn(
-                    "Please consider using Robot's `Secret` type for passing "
-                    "sensitive values like passwords."
+            if isinstance(passwd, str):
+                if passwd in os.environ:
+                    return os.environ[passwd]
+                raise RADKitLibraryError(
+                    "private_key_password was passed as a plain string but does "
+                    "not match any environment variable name. Pass the name of "
+                    "an environment variable containing the password, or use "
+                    "Robot Framework's Secret type. Passing literal password "
+                    "values is not supported for security reasons."
                 )
-                return os.environ[passwd]
-            else:
-                logger.warn(
-                    "Passing a literal value of the cert passphrase is considered "
-                    "insecure, this possibility will be removed in the future. "
-                    "Please consider storing the passphrase in an environment "
-                    "variable instead"
-                )
-                return str(passwd)
 
         b64_passwd = os.environ.get("RADKIT_CLIENT_PRIVATE_KEY_PASSWORD_BASE64")
         if b64_passwd:
@@ -248,18 +257,22 @@ class ConnectionKeywords:
             logger.debug(f"service {serial} already connected, no action performed")
             self.current_service = service
         except KeyError:
-            connection = self._find_radkit_connection(identity)  # type: ignore[attr-defined]
-            logger.info(
-                f"connecting to service {serial} with identity {connection.client_id}"
-            )
-            service = self.client.service(  # type: ignore[attr-defined]
-                serial, connection=connection
-            ).wait(timeout=self.radkit_timeout)  # type: ignore[has-type]
-            if service is None:
-                raise RADKitLibraryError("cannot connect to service") from None
-            self.current_service = service
+            if serial in self.direct_services:  # type: ignore[attr-defined]
+                self.current_service = self.direct_services[serial]  # type: ignore[attr-defined]
+            else:
+                connection = self._find_radkit_connection(identity)  # type: ignore[attr-defined]
+                logger.info(
+                    f"connecting to service {serial} with identity "
+                    f"{connection.client_id}"
+                )
+                service = self.client.service(  # type: ignore[attr-defined]
+                    serial, connection=connection
+                ).wait(timeout=self.radkit_timeout)  # type: ignore[has-type]
+                if service is None:
+                    raise RADKitLibraryError("cannot connect to service") from None
+                self.current_service = service
         logger.info(
-            f"Selected service {self.current_service.serial}"  # type: ignore[attr-defined]
+            f"Selected service {getattr(self.current_service, 'serial', serial)}"  # type: ignore[attr-defined]
         )
         return self.current_service
 

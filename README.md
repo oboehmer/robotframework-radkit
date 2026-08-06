@@ -36,13 +36,14 @@ ${SERVICE_SN}    abcd-1234-efgh
 
 *** Test Cases ***
 Query Device Inventory
-    RADKit certificate login
+    # identity can also be set via RADKIT_IDENTITY env var
+    RADKit certificate login    identity=user@cisco.com
     RADKit select service    ${SERVICE_SN}
     @{devices}=    RADKit device inventory
     Log Many    @{devices}
 
 Execute Show Version
-    RADKit certificate login
+    RADKit certificate login    identity=user@cisco.com
     RADKit select service    ${SERVICE_SN}
     ${result}=    RADKit execute    show version    devices=router1
     Log    ${result}[router1]
@@ -112,7 +113,7 @@ Library    RADKit
 
 *** Test Cases ***
 Port Forward With Testbed Update
-    RADKit certificate login
+    RADKit certificate login    identity=user@cisco.com
     RADKit select service    ${SERVICE_SN}
     RADKit Port Forward to Device    linuxdevice    local_port=0
     ...    destination_port=22    testbed_device=linux_server    testbed_conn=cli

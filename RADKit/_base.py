@@ -5,11 +5,17 @@
 
 from __future__ import annotations
 
+import os
 import typing
 from contextlib import ExitStack
 
 import radkit_client as rc
 from robot.libraries.BuiltIn import BuiltIn
+
+try:
+    from robot.api.types import Secret
+except ImportError:
+    Secret = None  # type: ignore[assignment, misc]
 
 if typing.TYPE_CHECKING:
     from typing import Any
@@ -37,6 +43,8 @@ class BaseMixin:
         self._exitstack = ExitStack()
         self._client: Any = None
         self.current_service: Any = None
+        self.direct_services: dict[str, Any] = {}
+        self.direct_services_users: dict[str, str] = {}
         self.radkit_timeout: int = 300
         self.selected_devices: Any = None
         self.current_identity: str | None = None
@@ -96,7 +104,9 @@ class BaseMixin:
         """Select a RADKit service by serial, or return the current service."""
         if serial:
             service = self._find_service(serial, identity)
-        elif self.current_service and self.current_service.connection is not None:
+        elif self.current_service is not None and self._is_usable_service(
+            self.current_service
+        ):
             service = self.current_service
         else:
             raise RADKitLibraryError(
@@ -112,6 +122,10 @@ class BaseMixin:
                 if identity and service.client_id.lower() != identity.lower():
                     continue
                 services_found.append(service)
+
+        direct = self.direct_services.get(serial)
+        if direct is not None:
+            services_found.append(direct)
 
         if len(services_found) == 0:
             msg = f"No service found with serial {serial}"
@@ -152,6 +166,45 @@ class BaseMixin:
             raise ValueError(
                 f"No authenticated cloud connection found for identity '{identity}'"
             )
+
+    @staticmethod
+    def _get_secret_or_env_only(value: Any, arg_name: str) -> str | None:
+        """Resolve a value that must be a Robot Secret or env-var name.
+
+        Returns the resolved string value, or None if value is None.
+        Raises RADKitLibraryError if value is a plain string that is not
+        an environment variable name.
+        """
+        if value is None:
+            return None
+        if Secret is not None and isinstance(value, Secret):
+            return str(value.value)
+        if isinstance(value, str) and value in os.environ:
+            return os.environ[value]
+        raise RADKitLibraryError(
+            f"{arg_name} must be provided as Robot Secret or as an "
+            "environment variable name"
+        )
+
+    @staticmethod
+    def _direct_service_id(host: str, port: int) -> str:
+        """Return a unique key for a direct service connection."""
+        return f"{host}-{port}"
+
+    @staticmethod
+    def _is_cloud_connected_service(service: Any) -> bool:
+        """Check if a service is a cloud-connected service."""
+        return getattr(service, "connection", None) is not None
+
+    def _is_direct_service(self, service: Any) -> bool:
+        """Check if a service is a direct service."""
+        return service in self.direct_services.values()
+
+    def _is_usable_service(self, service: Any) -> bool:
+        """Check if a service is usable (cloud-connected or direct)."""
+        return self._is_cloud_connected_service(service) or self._is_direct_service(
+            service
+        )
 
     def _get_devices(self, devices: Any, inventory: Any = None) -> Any:
         """Resolve devices argument to a RADKit DeviceDict."""

@@ -91,14 +91,59 @@ class TestRadkitCertificateLogin:
             call_kwargs = library.client.certificate_login.call_args[1]
             assert call_kwargs["private_key_password"] == "cleartext_pw"
 
+    def test_password_literal_string_rejected(self, library: RADKit) -> None:
+        """Test that passing a literal password string raises RADKitLibraryError."""
+        library.client.cloud_connections.values.return_value = []
+
+        with patch.dict(os.environ, {}, clear=True):
+            with pytest.raises(
+                RADKitLibraryError,
+                match="does not match any environment variable name",
+            ):
+                library.radkit_certificate_login(
+                    identity="user@cisco.com",
+                    private_key_password="literal_password_value",
+                )
+
+    def test_password_from_named_env_var_argument(self, library: RADKit) -> None:
+        """Test password resolution when passing env var name as argument."""
+        library.client.cloud_connections.values.return_value = []
+
+        with patch.dict(
+            os.environ,
+            {"MY_PASSWORD_VAR": "secret_from_env"},
+            clear=True,
+        ):
+            library.radkit_certificate_login(
+                identity="user@cisco.com",
+                private_key_password="MY_PASSWORD_VAR",
+            )
+            call_kwargs = library.client.certificate_login.call_args[1]
+            assert call_kwargs["private_key_password"] == "secret_from_env"
+
+    def test_password_from_secret_type(self, library: RADKit) -> None:
+        """Test password resolution when passing a Robot Framework Secret."""
+        from robot.api.types import Secret
+
+        library.client.cloud_connections.values.return_value = []
+
+        with patch.dict(os.environ, {}, clear=True):
+            library.radkit_certificate_login(
+                identity="user@cisco.com",
+                private_key_password=Secret("s3cret"),
+            )
+            call_kwargs = library.client.certificate_login.call_args[1]
+            assert call_kwargs["private_key_password"] == "s3cret"
+
     def test_sets_current_identity(self, library: RADKit) -> None:
         """Test that current_identity is set after login."""
         library.client.cloud_connections.values.return_value = []
 
-        library.radkit_certificate_login(
-            identity="user@cisco.com",
-            private_key_password="pw",
-        )
+        with patch.dict(os.environ, {"PW_VAR": "pw"}):
+            library.radkit_certificate_login(
+                identity="user@cisco.com",
+                private_key_password="PW_VAR",
+            )
         assert library.current_identity == "user@cisco.com"
 
     def test_env_paths_used_as_defaults(self, library: RADKit) -> None:
@@ -110,10 +155,11 @@ class TestRadkitCertificateLogin:
             "RADKIT_CERT_PATH": "env_cert",
             "RADKIT_CA_PATH": "env_ca",
             "RADKIT_KEY_PATH": "env_key",
+            "MY_PW": "the_password",
         }
         with patch.dict(os.environ, env, clear=True):
             library.radkit_certificate_login(
-                private_key_password="password",
+                private_key_password="MY_PW",
                 domain="domain",
             )
 
@@ -122,7 +168,7 @@ class TestRadkitCertificateLogin:
             cert_path="env_cert",
             ca_path="env_ca",
             key_path="env_key",
-            private_key_password="password",
+            private_key_password="the_password",
             domain="domain",
         )
 
@@ -135,6 +181,7 @@ class TestRadkitCertificateLogin:
             "RADKIT_CERT_PATH": "env_cert",
             "RADKIT_CA_PATH": "env_ca",
             "RADKIT_KEY_PATH": "env_key",
+            "MY_PW": "the_password",
         }
         with patch.dict(os.environ, env, clear=True):
             library.radkit_certificate_login(
@@ -142,7 +189,7 @@ class TestRadkitCertificateLogin:
                 cert_path="my_cert",
                 ca_path="my_ca",
                 key_path="my_key",
-                private_key_password="password",
+                private_key_password="MY_PW",
                 domain="domain",
             )
 
@@ -151,7 +198,7 @@ class TestRadkitCertificateLogin:
             cert_path="my_cert",
             ca_path="my_ca",
             key_path="my_key",
-            private_key_password="password",
+            private_key_password="the_password",
             domain="domain",
         )
 
