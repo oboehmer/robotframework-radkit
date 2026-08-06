@@ -22,7 +22,7 @@ if typing.TYPE_CHECKING:
 class DirectKeywords:
     """Keywords for RADKit direct service connections (without cloud)."""
 
-    @keyword("RADKit service direct")
+    @keyword("RADKit Service Direct")
     def radkit_service_direct(
         self,
         username: str,
@@ -55,7 +55,7 @@ class DirectKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit service direct    superadmin    ENV_VAR_WITH_PASSWORD    remotehost
+        RADKit Service Direct    superadmin    ENV_VAR_WITH_PASSWORD    remotehost
             </pre>
         """
 
@@ -111,7 +111,7 @@ class DirectKeywords:
         )
         return self.current_service  # type: ignore[attr-defined]
 
-    @keyword("RADKit disconnect direct service")
+    @keyword("RADKit Disconnect Direct Service")
     def radkit_disconnect_direct_service(
         self, host: str | None = None, port: int = 8181
     ) -> None:
@@ -129,9 +129,9 @@ class DirectKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit disconnect direct service    remotehost
+        RADKit Disconnect Direct Service    remotehost
 
-        RADKit disconnect direct service
+        RADKit Disconnect Direct Service
             </pre>
         """
 

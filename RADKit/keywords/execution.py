@@ -48,7 +48,7 @@ class ExecutionKeywords:
                         errors += 1
         return results, success, errors
 
-    @keyword("RADKit execute")
+    @keyword("RADKit Execute")
     def radkit_execute_sync(
         self,
         commands: str | list[str],
@@ -85,13 +85,13 @@ class ExecutionKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit select service    1111-2222-3333
+        RADKit Select Service    1111-2222-3333
         @{devices}=    Create List    router1    router2    router3
-        ${result}=    RADKit execute    show version    devices=${devices}
+        ${result}=    RADKit Execute    show version    devices=${devices}
         # output: ${result}[router1], ${result}[router2], etc.
 
         @{commands}=    Create List    show version    show clock
-        ${result}=    RADKit execute    ${commands}    devices=router1;router2
+        ${result}=    RADKit Execute    ${commands}    devices=router1;router2
         # output: ${result}[router1][show version], etc.
             </pre>
         """

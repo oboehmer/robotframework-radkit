@@ -49,7 +49,7 @@ class GenieKeywords:
 
             <p>Either provide <code>commands</code> and <code>devices</code> to execute
             and parse in one step, or provide <code>raw_output</code> from a previous
-            <code>RADKit execute</code> call (with <code>raw=True</code>).</p>
+            <code>RADKit Execute</code> call (with <code>raw=True</code>).</p>
 
             <p>The device's operating system can be provided via <code>os</code>, or
             auto-detected using <code>RADKit Genie Fingerprint</code> beforehand.</p>
@@ -63,7 +63,7 @@ class GenieKeywords:
                 <li><code>devices</code>: Device(s) to execute on</li>
                 <li><code>os</code>: Device OS (e.g. iosxe, iosxr)</li>
                 <li><code>exec_timeout</code>: Execution timeout (optional)</li>
-                <li><code>raw_output</code>: Raw result from RADKit execute
+                <li><code>raw_output</code>: Raw result from RADKit Execute
                     (alternative to commands/devices)</li>
             </ul>
 
@@ -71,7 +71,7 @@ class GenieKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit select service    1111-2222-3333
+        RADKit Select Service    1111-2222-3333
         @{devices}=    Create List    router1    router2
         ${result}=    RADKit Genie Parse    commands=show version
         ...    devices=${devices}    os=iosxe
@@ -82,7 +82,7 @@ class GenieKeywords:
         if commands is not None and raw_output is not None:
             raise ValueError(
                 "either pass commands and devices OR the raw output from a previous "
-                "RADKit execute command, but not both"
+                "RADKit Execute command, but not both"
             )
 
         if raw_output is None:
@@ -96,7 +96,7 @@ class GenieKeywords:
             if not isinstance(raw_output, radkit_client.sync.ExecResponseBase):
                 raise ValueError(
                     "expected argument is not a raw RADKit result, please use "
-                    "the raw=True argument to RADKit execute keyword"
+                    "the raw=True argument to RADKit Execute keyword"
                 )
             result = raw_output
 
@@ -133,7 +133,7 @@ class GenieKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit select service    1111-2222-3333
+        RADKit Select Service    1111-2222-3333
         @{devices}=    Create List    router1    router2
         ${result}=    RADKit Genie Learn    platform
         ...    devices=${devices}    os=iosxe
@@ -180,7 +180,7 @@ class GenieKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit select service    1111-2222-3333
+        RADKit Select Service    1111-2222-3333
         @{devices}=    Create List    router1    router2
         RADKit Genie Fingerprint    ${devices}
         # Now Parse and Learn no longer require the os argument

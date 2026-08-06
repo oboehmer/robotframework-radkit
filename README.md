@@ -37,15 +37,15 @@ ${SERVICE_SN}    abcd-1234-efgh
 *** Test Cases ***
 Query Device Inventory
     # identity can also be set via RADKIT_IDENTITY env var
-    RADKit certificate login    identity=user@cisco.com
-    RADKit select service    ${SERVICE_SN}
-    @{devices}=    RADKit device inventory
+    RADKit Certificate Login    identity=user@cisco.com
+    RADKit Select Service    ${SERVICE_SN}
+    @{devices}=    RADKit Device Inventory
     Log Many    @{devices}
 
 Execute Show Version
-    RADKit certificate login    identity=user@cisco.com
-    RADKit select service    ${SERVICE_SN}
-    ${result}=    RADKit execute    show version    devices=router1
+    RADKit Certificate Login    identity=user@cisco.com
+    RADKit Select Service    ${SERVICE_SN}
+    ${result}=    RADKit Execute    show version    devices=router1
     Log    ${result}[router1]
 ```
 
@@ -56,23 +56,23 @@ Execute Show Version
 | Keyword | Description |
 |---------|-------------|
 | `RADKit Client Version` | Return installed radkit_client version |
-| `RADKit certificate login` | Authenticate to RADKit cloud via certificates |
-| `RADKit disconnect` | Disconnect from RADKit cloud (all or specific identity) |
-| `RADKit select service` | Connect to a RADKit service by serial |
-| `RADKit timeout` | Set execution timeout (default: 300s) |
+| `RADKit Certificate Login` | Authenticate to RADKit cloud via certificates |
+| `RADKit Disconnect` | Disconnect from RADKit cloud (all or specific identity) |
+| `RADKit Select Service` | Connect to a RADKit service by serial |
+| `RADKit Timeout` | Set execution timeout (default: 300s) |
 
 ### Device Management
 
 | Keyword | Description |
 |---------|-------------|
-| `RADKit device inventory` | Retrieve device inventory (with optional filter) |
-| `RADKit select devices` | Select default devices for subsequent execute calls |
+| `RADKit Device Inventory` | Retrieve device inventory (with optional filter) |
+| `RADKit Select Devices` | Select default devices for subsequent execute calls |
 
 ### Command Execution
 
 | Keyword | Description |
 |---------|-------------|
-| `RADKit execute` | Execute CLI commands on one or more devices in parallel |
+| `RADKit Execute` | Execute CLI commands on one or more devices in parallel |
 
 ### Port Forwarding
 
@@ -113,8 +113,8 @@ Library    RADKit
 
 *** Test Cases ***
 Port Forward With Testbed Update
-    RADKit certificate login    identity=user@cisco.com
-    RADKit select service    ${SERVICE_SN}
+    RADKit Certificate Login    identity=user@cisco.com
+    RADKit Select Service    ${SERVICE_SN}
     RADKit Port Forward to Device    linuxdevice    local_port=0
     ...    destination_port=22    testbed_device=linux_server    testbed_conn=cli
     connect to device "linux_server" via "cli"
@@ -125,9 +125,9 @@ Port Forward With Testbed Update
 ### Execute Commands on Multiple Devices
 
 ```robot
-RADKit select service    ${SERVICE_SN}
+RADKit Select Service    ${SERVICE_SN}
 @{devices}=    Create List    router1    router2    router3
-${result}=    RADKit execute    show version    devices=${devices}
+${result}=    RADKit Execute    show version    devices=${devices}
 # Access output: ${result}[router1], ${result}[router2], etc.
 ```
 
@@ -135,16 +135,16 @@ ${result}=    RADKit execute    show version    devices=${devices}
 
 ```robot
 @{commands}=    Create List    show version    show clock
-${result}=    RADKit execute    ${commands}    devices=router1;router2
+${result}=    RADKit Execute    ${commands}    devices=router1;router2
 # Access: ${result}[router1][show version], ${result}[router1][show clock], etc.
 ```
 
 ### Use Inventory Filters
 
 ```robot
-${inventory}=    RADKit device inventory    raw=True
+${inventory}=    RADKit Device Inventory    raw=True
 ${subset}=    Evaluate    $inventory.filter("name", "PE*").filter("device_type", "IOSXE")
-${result}=    RADKit execute    show version    devices=${subset}
+${result}=    RADKit Execute    show version    devices=${subset}
 ```
 
 ### Parse Output with Genie
@@ -164,8 +164,8 @@ ${parsed}=    RADKit Genie Parse    commands=show version    devices=${devices}
 git clone https://github.com/oboehmer/robotframework-radkit.git
 cd robotframework-radkit
 
-# Install in development mode (requires access to radkit.cisco.com/pip)
-pip install --extra-index-url https://radkit.cisco.com/pip -e ".[dev]"
+# Install in development mode (includes genie dependencies)
+uv sync --extra dev --extra genie
 
 # Install pre-commit hooks
 pre-commit install

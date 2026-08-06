@@ -43,7 +43,7 @@ class ConnectionKeywords:
         logger.info(f"radkit_client version {version}")
         return version
 
-    @keyword("RADKit certificate login")
+    @keyword("RADKit Certificate Login")
     def radkit_certificate_login(
         self,
         identity: str | None = None,
@@ -84,16 +84,16 @@ class ConnectionKeywords:
             <pre>
         # All arguments can also be provided via environment variables
         # (RADKIT_IDENTITY, RADKIT_CERT_PATH, RADKIT_KEY_PATH, etc.)
-        RADKit certificate login    identity=user@cisco.com
+        RADKit Certificate Login    identity=user@cisco.com
 
         # Private key password from a named environment variable
-        RADKit certificate login    identity=user@cisco.com
+        RADKit Certificate Login    identity=user@cisco.com
         ...    private_key_password=MY_PK_PASSWORD_ENV_VAR
 
         # Private key password using Robot Framework Secret variable
         # (define in *** Variables *** section)
         # ${PK_PASSWORD: Secret}    %{MY_PK_PASSWORD_ENV_VAR}
-        RADKit certificate login    identity=user@cisco.com
+        RADKit Certificate Login    identity=user@cisco.com
         ...    private_key_password=${PK_PASSWORD}
             </pre>
         """
@@ -140,7 +140,7 @@ class ConnectionKeywords:
         self.current_identity = identity  # type: ignore[attr-defined]
         logger.debug(
             f"Setting current identity to {identity} for subsequent "
-            "RADKit select service calls"
+            "RADKit Select Service calls"
         )
 
         logger.debug(
@@ -175,7 +175,7 @@ class ConnectionKeywords:
         else:
             return os.environ.get("RADKIT_CLIENT_PRIVATE_KEY_PASSWORD")
 
-    @keyword("RADKit disconnect")
+    @keyword("RADKit Disconnect")
     def radkit_disconnect(self, identity: str | None = None) -> None:
         """<p>Disconnect from all or selected RADKit cloud connections.</p>
 
@@ -187,9 +187,9 @@ class ConnectionKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit disconnect
+        RADKit Disconnect
 
-        RADKit disconnect    cxta-user@cisco.com
+        RADKit Disconnect    cxta-user@cisco.com
             </pre>
         """
 
@@ -218,13 +218,13 @@ class ConnectionKeywords:
                 logger.debug(
                     f"Setting current identity to "
                     f"{self.current_identity} for subsequent "
-                    "RADKit select service calls"
+                    "RADKit Select Service calls"
                 )
         else:
             self.current_service = None
             self.current_identity = None
 
-    @keyword("RADKit select service")
+    @keyword("RADKit Select Service")
     def radkit_select_service(self, serial: str, identity: str | None = None) -> Any:
         """<p>Connect to and select a remote RADKit service using its serial
             number/service-id.</p>
@@ -247,8 +247,8 @@ class ConnectionKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit select service    abcd-1234-efgh
-        ${inventory}=    RADKit device inventory
+        RADKit Select Service    abcd-1234-efgh
+        ${inventory}=    RADKit Device Inventory
             </pre>
         """
         identity = identity or self.current_identity
@@ -276,7 +276,7 @@ class ConnectionKeywords:
         )
         return self.current_service
 
-    @keyword("RADKit timeout")
+    @keyword("RADKit Timeout")
     def set_radkit_timeout(self, seconds: int | str) -> int:
         """<p>Set the time (in seconds) keywords will wait for a response from the
             RADKit service. Default is 300 seconds (5 minutes).</p>
@@ -290,7 +290,7 @@ class ConnectionKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        ${old_timeout}=    RADKit timeout    60
+        ${old_timeout}=    RADKit Timeout    60
             </pre>
         """
         old_timeout: int = self.radkit_timeout  # type: ignore[has-type]

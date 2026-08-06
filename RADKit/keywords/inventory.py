@@ -18,7 +18,7 @@ if typing.TYPE_CHECKING:
 class InventoryKeywords:
     """Keywords for RADKit device inventory and device selection."""
 
-    @keyword("RADKit device inventory")
+    @keyword("RADKit Device Inventory")
     def radkit_retrieve_inventory(
         self,
         serial: str | None = None,
@@ -51,11 +51,11 @@ class InventoryKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        @{devices}=    RADKit device inventory
+        @{devices}=    RADKit Device Inventory
 
-        @{devices}=    RADKit device inventory    1234-abcd-efgh
-        @{devices}=    RADKit device inventory    filter=name,PE.*
-        @{devices}=    RADKit device inventory    filter=type,IO.*
+        @{devices}=    RADKit Device Inventory    1234-abcd-efgh
+        @{devices}=    RADKit Device Inventory    filter=name,PE.*
+        @{devices}=    RADKit Device Inventory    filter=type,IO.*
             </pre>
         """
         service = self._select_service(serial, identity)  # type: ignore[attr-defined]
@@ -72,7 +72,7 @@ class InventoryKeywords:
         else:
             return list(result)
 
-    @keyword("RADKit select devices")
+    @keyword("RADKit Select Devices")
     def radkit_select_devices(
         self,
         devices: Any,
@@ -80,7 +80,7 @@ class InventoryKeywords:
         identity: str | None = None,
     ) -> Any:
         """<p>Select one or more RADKit devices as default for subsequent
-            RADKit execute calls.</p>
+            RADKit Execute calls.</p>
 
             <p>Devices can be passed as a semicolon-separated string
             (<code>device1;device2;device3</code>), a list of strings, or a RADKit
@@ -99,13 +99,13 @@ class InventoryKeywords:
             <p><strong>Example:</strong></p>
             <pre>
         @{devices}=    Create List    router1    router2    router3
-        ${result}=    RADKit select devices    ${devices}
+        ${result}=    RADKit Select Devices    ${devices}
 
-        ${result}=    RADKit select devices    router1;router2;router3
+        ${result}=    RADKit Select Devices    router1;router2;router3
 
-        ${inventory}=    RADKit device inventory    raw=True
+        ${inventory}=    RADKit Device Inventory    raw=True
         ${subset}=    Evaluate    $inventory.filter("name", "PE*")
-        ${result}=    RADKit select devices    ${subset}
+        ${result}=    RADKit Select Devices    ${subset}
             </pre>
         """
         inventory = self.radkit_retrieve_inventory(

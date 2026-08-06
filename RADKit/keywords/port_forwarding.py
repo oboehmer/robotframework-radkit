@@ -61,7 +61,7 @@ class PortForwardingKeywords:
 
             <p><strong>Example:</strong></p>
             <pre>
-        RADKit select service    1111-2222-3333
+        RADKit Select Service    1111-2222-3333
         ${forwarder}    ${port}=    RADKit Port Forward to Device
         ...    server1    local_port=0    destination_port=8443
 
