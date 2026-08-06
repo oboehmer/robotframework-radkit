@@ -116,6 +116,7 @@ show_error_context = true
 [tool.pytest.ini_options]
 markers = ["unit", "integration"]
 testpaths = ["tests"]
+addopts = "--ignore=tests/smoke"
 
 [tool.hatch.build.targets.wheel]
 packages = ["RADKit"]

@@ -61,3 +61,6 @@ Thumbs.db
 *.whl
 *.tar.gz
 .claude/
+
+# misc
+.env
