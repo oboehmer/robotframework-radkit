@@ -11,13 +11,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from RADKit import RADKit
-from RADKit._base import RADKitLibraryError
+from RADKit.base import RADKitLibraryError
 
 
 @pytest.fixture
 def library() -> RADKit:
     """Create a RADKit library instance."""
-    with patch("RADKit._base.BuiltIn"):
+    with patch("RADKit.base.BuiltIn"):
         lib = RADKit()
         lib._client = MagicMock()
         return lib

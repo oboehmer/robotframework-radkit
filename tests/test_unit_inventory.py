@@ -13,7 +13,7 @@ from RADKit import RADKit
 @pytest.fixture
 def library() -> RADKit:
     """Create a RADKit library instance."""
-    with patch("RADKit._base.BuiltIn"):
+    with patch("RADKit.base.BuiltIn"):
         lib = RADKit()
         lib._client = MagicMock()
         return lib

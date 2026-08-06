@@ -12,6 +12,8 @@ from contextlib import ExitStack
 import radkit_client as rc
 from robot.libraries.BuiltIn import BuiltIn
 
+from RADKit.utils import is_cloud_connected_service
+
 try:
     from robot.api.types import Secret
 except ImportError:
@@ -28,7 +30,7 @@ class RADKitLibraryError(RuntimeError):
     """Exception raised by RADKit library keywords."""
 
 
-class BaseMixin:
+class Base:
     """Mixin providing the RADKit client lifecycle and shared state.
 
     This mixin is inherited by the main ``RADKit`` library class and provides:
@@ -186,25 +188,13 @@ class BaseMixin:
             "environment variable name"
         )
 
-    @staticmethod
-    def _direct_service_id(host: str, port: int) -> str:
-        """Return a unique key for a direct service connection."""
-        return f"{host}-{port}"
-
-    @staticmethod
-    def _is_cloud_connected_service(service: Any) -> bool:
-        """Check if a service is a cloud-connected service."""
-        return getattr(service, "connection", None) is not None
-
     def _is_direct_service(self, service: Any) -> bool:
         """Check if a service is a direct service."""
         return service in self.direct_services.values()
 
     def _is_usable_service(self, service: Any) -> bool:
         """Check if a service is usable (cloud-connected or direct)."""
-        return self._is_cloud_connected_service(service) or self._is_direct_service(
-            service
-        )
+        return is_cloud_connected_service(service) or self._is_direct_service(service)
 
     def _get_devices(self, devices: Any, inventory: Any = None) -> Any:
         """Resolve devices argument to a RADKit DeviceDict."""

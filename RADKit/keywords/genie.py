@@ -11,7 +11,7 @@ import radkit_client.sync
 from robot.api.deco import keyword
 from robot.utils import is_truthy
 
-from RADKit._base import RADKitLibraryError
+from RADKit.base import RADKitLibraryError
 
 if typing.TYPE_CHECKING:
     from typing import Any

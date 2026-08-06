@@ -10,7 +10,8 @@ import typing
 from robot.api import logger
 from robot.api.deco import keyword
 
-from RADKit._base import RADKitLibraryError
+from RADKit.base import RADKitLibraryError
+from RADKit.utils import direct_service_id
 
 if typing.TYPE_CHECKING:
     from typing import Any
@@ -61,7 +62,7 @@ class DirectKeywords:
         resolved_password = self._get_secret_or_env_only(password, "password")  # type: ignore[attr-defined]
 
         port = int(port)
-        service_id = self._direct_service_id(host, port)  # type: ignore[attr-defined]
+        service_id = direct_service_id(host, port)
 
         existing = self.direct_services.get(service_id)  # type: ignore[attr-defined]
         if existing is not None:
@@ -136,7 +137,7 @@ class DirectKeywords:
 
         port = int(port)
         if host:
-            service_id = self._direct_service_id(host, port)  # type: ignore[attr-defined]
+            service_id = direct_service_id(host, port)
             service = self.direct_services.pop(service_id, None)  # type: ignore[attr-defined]
             self.direct_services_users.pop(service_id, None)  # type: ignore[attr-defined]
             if service is None:

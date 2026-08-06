@@ -9,7 +9,7 @@ devices, including authentication, device inventory, command execution,
 port forwarding, and Genie-based parsing.
 """
 
-from RADKit._base import BaseMixin, RADKitLibraryError
+from RADKit.base import Base, RADKitLibraryError
 from RADKit.keywords import (
     ConnectionKeywords,
     DirectKeywords,
@@ -24,7 +24,7 @@ __all__ = ["RADKit", "RADKitLibraryError"]
 
 
 class RADKit(
-    BaseMixin,
+    Base,
     ConnectionKeywords,
     DirectKeywords,
     InventoryKeywords,

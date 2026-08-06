@@ -5,7 +5,7 @@
 
 import pytest
 
-from RADKit._utils import is_ipv6_address
+from RADKit.utils import is_ipv6_address
 
 
 @pytest.mark.parametrize(

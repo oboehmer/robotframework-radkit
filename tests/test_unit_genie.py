@@ -10,13 +10,13 @@ import radkit_client.sync
 import radkit_genie
 
 from RADKit import RADKit
-from RADKit._base import RADKitLibraryError
+from RADKit.base import RADKitLibraryError
 
 
 @pytest.fixture
 def library() -> RADKit:
     """Create a RADKit library instance."""
-    with patch("RADKit._base.BuiltIn"):
+    with patch("RADKit.base.BuiltIn"):
         lib = RADKit()
         lib._client = MagicMock()
         return lib
@@ -143,7 +143,7 @@ class TestGenieNotInstalled:
 
     def test_genie_parse_not_installed(self) -> None:
         """Test that Genie Parse raises when radkit_genie is not installed."""
-        with patch("RADKit._base.BuiltIn"):
+        with patch("RADKit.base.BuiltIn"):
             lib = RADKit()
             lib._client = MagicMock()
 
