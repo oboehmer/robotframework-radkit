@@ -3,29 +3,16 @@ Library     RADKit
 Library    Collections
 Library    String
 Library    OperatingSystem
+Library     pyats.robot.pyATSRobot
+Library     unicon.robot.UniconRobot
 Suite Setup    Check and Set Environment
 Test Setup       connect as radkit client
 Test Teardown    Run Keywords    RADKit disconnect    AND    Sleep    1
+Variables    ${CURDIR}${/}smoke_variables.yaml
 
 *** Variables ***
 ${RADKIT_SECRET_PASSWORD: Secret}    %{RADKIT_CLIENT_PRIVATE_KEY_PASSWORD}
-
 ${RADKIT_TESTBED}      ${CURDIR}${/}testbed.yaml
-${RADKIT_SERVICE_SN}     cow7-wkim-h78i        # SVS UK lab
-${RADKIT_LINUX_DEVICE}     linux-server              # device name in radkit-service
-${MULTIPLE_RADKIT_DEVICES}     linux-server1;linux-server2;linux-server3;linux-server4;linux-server5
-${UNRESPONSIVE_RADKIT_DEVICE}     unresponsive-device
-${RADKIT_DEVICE_FILTER}     "name,linux-server[0-9]"
-${RADKIT_COMMAND}     uname
-${RADKIT_EXPECTED}     Linux
-${RADKIT_COMMAND_2}     ps
-${RADKIT_EXPECTED_2}     PID
-${RADKIT_IOSXE_DEVICE}     mock-iosxe-1
-${RADKIT_IOSXE_DEVICES}     mock-iosxe-1;mock-iosxe-2
-${RADKIT_SD_HOST}   lm-cxta-pipeline.cisco.com
-${RADKIT_SD_PORT}   8181
-${RADKIT_SD_USERNAME}   superadmin
-${RADKIT_DOMAIN}    PROD
 
 *** Test Cases ***
 Test RADkit version
@@ -33,6 +20,15 @@ Test RADkit version
     ${version}=   RADKit Client Version
     Should be True    re.match(r'\\d+\.\\d+', $version)
     [Teardown]
+
+Connect to RadKit linux device via unicon in lab ${RADKIT_SERVICE_SN}
+    [Tags]   radkit-interactive
+    [Setup]      Run Keywords        use testbed "${RADKIT_TESTBED}"    AND    connect to device "${RADKIT_LINUX_DEVICE}"
+    ${result}=   execute "${RADKIT_COMMAND}" on device "${RADKIT_LINUX_DEVICE}"
+    Should Contain    ${result}    ${RADKIT_EXPECTED}
+    ${result}=   execute "${RADKIT_COMMAND_2}" on device "${RADKIT_LINUX_DEVICE}"
+    Should Contain    ${result}    ${RADKIT_EXPECTED_2}
+    [Teardown]   disconnect from device "${RADKIT_LINUX_DEVICE}"
 
 Test Radkit Inventory
     [Tags]   radkit-client
@@ -348,15 +344,11 @@ Test RADKit certificate login with password as Secret
     [Tags]   radkit-client
     [Setup]
     RADKit certificate login    domain=${RADKIT_DOMAIN}    private_key_password=${RADKIT_SECRET_PASSWORD}
-    # ${version}=   RADKit Client Version
-    # Should be True    re.match('\\d+\.\\d+', $version)
 
 Test RADKit certificate login with password as name of the environment variable
     [Tags]   radkit-client
     [Setup]
     RADKit certificate login    domain=${RADKIT_DOMAIN}    private_key_password=RADKIT_CLIENT_PRIVATE_KEY_PASSWORD
-    # ${version}=   RADKit Client Version
-    # Should be True    re.match('\\d+\.\\d+', $version)
 
 *** Keywords ***
 Check and Set Environment

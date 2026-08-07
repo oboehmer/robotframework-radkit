@@ -1,27 +1,5 @@
 
 devices:
-  linux-server:
-    type: router
-    # use os: linux to not fail on hostname not matching
-    os: linux
-    connections:
-      defaults:
-        class: unicon.Unicon
-        via: radkit
-        debug: True
-      # passwords are not required as authentication is handled by RADkit
-      radkit:
-        command: radkit-interactive --domain %ENV{RADKIT_DOMAIN} --service-sn %ENV{RADKIT_SERVICE_SN} --device-name %ENV{RADKIT_LINUX_DEVICE} --cert-identity %ENV{RADKIT_IDENTITY} --ca-path %ENV{RADKIT_CA_PATH} --cert-path %ENV{RADKIT_CERT_PATH} --key-path %ENV{RADKIT_KEY_PATH}
-      cli:
-        protocol: ssh
-        # address and port will be overriden during the tests
-        ip: 127.0.0.99
-        port: 22
-        credentials:
-          default:
-            username: cxta
-            password: cxta
-
   mock-iosxe-1:
     type: router
     os: iosxe
@@ -31,9 +9,9 @@ devices:
         via: radkit
         debug: True
       radkit:
-        command: radkit-interactive --domain %ENV{RADKIT_DOMAIN} --service-sn %ENV{RADKIT_SERVICE_SN} --device-name mock-iosxe-1 --cert-identity %ENV{RADKIT_IDENTITY} --ca-path %ENV{RADKIT_CA_PATH} --cert-path %ENV{RADKIT_CERT_PATH} --key-path %ENV{RADKIT_KEY_PATH}
+        command: radkit-interactive --service-sn %ENV{RADKIT_SERVICE_SN} --device-name %SELF --cert-identity %ENV{RADKIT_IDENTITY}
 
-  linux-server-2:
+  linux-server:
     type: router
     os: linux
     connections:
@@ -41,6 +19,5 @@ devices:
         class: unicon.Unicon
         via: radkit
         debug: True
-      # use legacy "--device" argument (instead of the official "--device-name") to ensure this one still works
       radkit:
-        command: radkit-interactive --domain %ENV{RADKIT_DOMAIN} --service-sn %ENV{RADKIT_SERVICE_SN} --device %ENV{RADKIT_LINUX_DEVICE} --cert-identity %ENV{RADKIT_IDENTITY} --ca-path %ENV{RADKIT_CA_PATH} --cert-path %ENV{RADKIT_CERT_PATH} --key-path %ENV{RADKIT_KEY_PATH}
+        command: radkit-interactive --service-sn %ENV{RADKIT_SERVICE_SN} --device linux-server --cert-identity %ENV{RADKIT_IDENTITY}

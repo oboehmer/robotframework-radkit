@@ -1,0 +1,20 @@
+# Smoke test variables — copy to smoke_variables.yaml and adjust for your environment.
+# This file is loaded by test_smoke.robot via the Variables setting.
+#
+# Do NOT commit your local smoke_variables.yaml (it is gitignored).
+
+RADKIT_SERVICE_SN: xxxx-yyyy-zzzz                # RADKit service serial number
+RADKIT_LINUX_DEVICE: linux-server                # single Linux device in the service
+MULTIPLE_RADKIT_DEVICES: linux-server1;linux-server2;linux-server3;linux-server4;linux-server5
+UNRESPONSIVE_RADKIT_DEVICE: unresponsive-device
+RADKIT_DEVICE_FILTER: "name,linux-server[0-9]"
+RADKIT_COMMAND: uname
+RADKIT_EXPECTED: Linux
+RADKIT_COMMAND_2: ps
+RADKIT_EXPECTED_2: PID
+RADKIT_IOSXE_DEVICE: mock-iosxe-1
+RADKIT_IOSXE_DEVICES: mock-iosxe-1;mock-iosxe-2
+RADKIT_SD_HOST: hostname.do.main
+RADKIT_SD_PORT: 8181
+RADKIT_SD_USERNAME: admin-username
+RADKIT_DOMAIN: PROD

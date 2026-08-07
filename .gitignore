@@ -51,7 +51,10 @@ coverage.xml
 log.html
 output.xml
 report.html
-selenium-screenshot-*.png
+robot_output/
+
+# Smoke test local variables (copy from smoke_variables.yaml.example)
+tests/smoke/smoke_variables.yaml
 
 # OS
 .DS_Store
