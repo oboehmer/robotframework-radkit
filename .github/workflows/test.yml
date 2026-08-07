@@ -88,4 +88,3 @@ jobs:
         if: matrix.python == '3.12'
         with:
           file: ./coverage.xml
-
