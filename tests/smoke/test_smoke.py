@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) 2025 Oliver Boehmer
+
 """Pytest wrapper for Robot Framework smoke tests.
 
 This script ensures the required dependencies (unicon, pyats.robot) are installed
