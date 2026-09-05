@@ -26,7 +26,7 @@ jobs:
           pip install bandit[toml]
 
       - name: Run bandit security scan
-        run: bandit -r RADKit/ -ll -f json -o bandit-security-report.json
+        run: bandit -r RADKitLibrary/ -ll -f json -o bandit-security-report.json
 
       - name: Upload security report
         uses: actions/upload-artifact@v4
@@ -81,7 +81,7 @@ jobs:
         run: uv sync --extra dev --extra genie
 
       - name: Run tests
-        run: uv run pytest --cov=RADKit --cov-report=xml
+        run: uv run pytest --cov=RADKitLibrary --cov-report=xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4

@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation    Acceptance tests for RADKit Robot Framework library
 ...              These tests verify keyword discovery and basic argument handling.
-Library          RADKit
+Library          RADKitLibrary
 
 *** Test Cases ***
 Client Version Returns String

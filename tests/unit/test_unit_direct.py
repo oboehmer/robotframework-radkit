@@ -10,15 +10,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from RADKit import RADKit
-from RADKit.base import RADKitLibraryError
+from RADKitLibrary import RADKitLibrary, RADKitLibraryError
 
 
 @pytest.fixture
-def library() -> RADKit:
+def library() -> RADKitLibrary:
     """Create a RADKit library instance."""
-    with patch("RADKit.base.BuiltIn"):
-        lib = RADKit()
+    with patch("RADKitLibrary.base.BuiltIn"):
+        lib = RADKitLibrary()
         lib._client = MagicMock()
         return lib
 
@@ -26,7 +25,7 @@ def library() -> RADKit:
 class TestRadkitServiceDirect:
     """Tests for RADKit service direct keyword."""
 
-    def test_connect_direct_with_env_password(self, library: RADKit) -> None:
+    def test_connect_direct_with_env_password(self, library: RADKitLibrary) -> None:
         """Test direct connection with password from env var."""
         mock_service = MagicMock()
         mock_service.name = "test-service"
@@ -51,7 +50,7 @@ class TestRadkitServiceDirect:
         assert library.direct_services["10.0.0.1-8181"] == mock_service
         assert library.direct_services_users["10.0.0.1-8181"] == "admin"
 
-    def test_connect_direct_with_custom_port(self, library: RADKit) -> None:
+    def test_connect_direct_with_custom_port(self, library: RADKitLibrary) -> None:
         """Test direct connection with custom port."""
         mock_service = MagicMock()
         library.client.service_direct.return_value.wait.return_value = mock_service
@@ -66,7 +65,7 @@ class TestRadkitServiceDirect:
 
         assert library.direct_services["10.0.0.1-9090"] == mock_service
 
-    def test_connect_direct_with_fingerprint(self, library: RADKit) -> None:
+    def test_connect_direct_with_fingerprint(self, library: RADKitLibrary) -> None:
         """Test direct connection with SHA256 fingerprint."""
         mock_service = MagicMock()
         library.client.service_direct.return_value.wait.return_value = mock_service
@@ -87,7 +86,7 @@ class TestRadkitServiceDirect:
             sha256_fingerprint="AA:BB:CC",
         )
 
-    def test_already_connected_same_user(self, library: RADKit) -> None:
+    def test_already_connected_same_user(self, library: RADKitLibrary) -> None:
         """Test that reconnecting with same user returns existing service."""
         existing_service = MagicMock()
         library.direct_services["10.0.0.1-8181"] = existing_service
@@ -104,7 +103,9 @@ class TestRadkitServiceDirect:
         # service_direct should NOT be called again
         library.client.service_direct.assert_not_called()
 
-    def test_already_connected_different_user_raises(self, library: RADKit) -> None:
+    def test_already_connected_different_user_raises(
+        self, library: RADKitLibrary
+    ) -> None:
         """Test that reconnecting with different user raises error."""
         existing_service = MagicMock()
         library.direct_services["10.0.0.1-8181"] = existing_service
@@ -120,7 +121,7 @@ class TestRadkitServiceDirect:
                     host="10.0.0.1",
                 )
 
-    def test_password_not_in_env_raises(self, library: RADKit) -> None:
+    def test_password_not_in_env_raises(self, library: RADKitLibrary) -> None:
         """Test that plain string password not in env raises error."""
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(
@@ -133,7 +134,7 @@ class TestRadkitServiceDirect:
                     host="10.0.0.1",
                 )
 
-    def test_service_direct_returns_none_raises(self, library: RADKit) -> None:
+    def test_service_direct_returns_none_raises(self, library: RADKitLibrary) -> None:
         """Test that None response from service_direct raises error."""
         library.client.service_direct.return_value.wait.return_value = None
 
@@ -151,7 +152,7 @@ class TestRadkitServiceDirect:
 class TestRadkitDisconnectDirectService:
     """Tests for RADKit disconnect direct service keyword."""
 
-    def test_disconnect_specific_host(self, library: RADKit) -> None:
+    def test_disconnect_specific_host(self, library: RADKitLibrary) -> None:
         """Test disconnecting a specific direct service."""
         mock_service = MagicMock()
         library.direct_services["10.0.0.1-8181"] = mock_service
@@ -164,7 +165,7 @@ class TestRadkitDisconnectDirectService:
         assert "10.0.0.1-8181" not in library.direct_services
         assert library.current_service is None
 
-    def test_disconnect_all(self, library: RADKit) -> None:
+    def test_disconnect_all(self, library: RADKitLibrary) -> None:
         """Test disconnecting all direct services."""
         svc1 = MagicMock()
         svc2 = MagicMock()
@@ -181,17 +182,17 @@ class TestRadkitDisconnectDirectService:
         assert len(library.direct_services) == 0
         assert library.current_service is None
 
-    def test_disconnect_nonexistent_raises(self, library: RADKit) -> None:
+    def test_disconnect_nonexistent_raises(self, library: RADKitLibrary) -> None:
         """Test disconnecting non-existent host raises error."""
         with pytest.raises(RADKitLibraryError, match="No direct service connection"):
             library.radkit_disconnect_direct_service(host="10.0.0.1")
 
-    def test_disconnect_all_when_empty(self, library: RADKit) -> None:
+    def test_disconnect_all_when_empty(self, library: RADKitLibrary) -> None:
         """Test disconnecting all when no direct services exist."""
         # Should not raise
         library.radkit_disconnect_direct_service()
 
-    def test_disconnect_preserves_cloud_service(self, library: RADKit) -> None:
+    def test_disconnect_preserves_cloud_service(self, library: RADKitLibrary) -> None:
         """Test that disconnecting direct services doesn't clear cloud current_service."""
         cloud_service = MagicMock()
         cloud_service.connection = MagicMock()  # cloud services have .connection

@@ -12,7 +12,7 @@ from contextlib import ExitStack
 import radkit_client as rc
 from robot.libraries.BuiltIn import BuiltIn
 
-from RADKit.utils import is_cloud_connected_service
+from .utils import is_cloud_connected_service
 
 try:
     from robot.api.types import Secret
@@ -33,7 +33,7 @@ class RADKitLibraryError(RuntimeError):
 class Base:
     """Mixin providing the RADKit client lifecycle and shared state.
 
-    This mixin is inherited by the main ``RADKit`` library class and provides:
+    This mixin is inherited by the main ``RADKitLibrary`` library class and provides:
     - Lazy ``radkit_client.Client`` creation via ``ExitStack``
     - Cleanup via Robot Framework listener ``_close`` hook
     - Optional pyATS testbed access (when pyATS is installed and loaded)

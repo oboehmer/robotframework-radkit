@@ -8,15 +8,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 import radkit_client.sync.exceptions
 
-from RADKit import RADKit
-from RADKit.base import RADKitLibraryError
+from RADKitLibrary import RADKitLibrary, RADKitLibraryError
 
 
 @pytest.fixture
-def library() -> RADKit:
+def library() -> RADKitLibrary:
     """Create a RADKit library instance."""
-    with patch("RADKit.base.BuiltIn"):
-        lib = RADKit()
+    with patch("RADKitLibrary.base.BuiltIn"):
+        lib = RADKitLibrary()
         lib._client = MagicMock()
         return lib
 
@@ -24,7 +23,7 @@ def library() -> RADKit:
 class TestRadkitExecute:
     """Tests for RADKit execute keyword."""
 
-    def test_single_command_single_device(self, library: RADKit) -> None:
+    def test_single_command_single_device(self, library: RADKitLibrary) -> None:
         """Test executing a single command on one device."""
         mock_devices = MagicMock()
         mock_result = MagicMock()
@@ -38,7 +37,7 @@ class TestRadkitExecute:
         assert "router1" in result
         assert result["router1"] == "Cisco IOS XE Version 17.3.1"
 
-    def test_multiple_commands(self, library: RADKit) -> None:
+    def test_multiple_commands(self, library: RADKitLibrary) -> None:
         """Test executing multiple commands."""
         mock_devices = MagicMock()
         mock_result = MagicMock()
@@ -55,7 +54,7 @@ class TestRadkitExecute:
         assert result["router1"]["show version"] == "version info"
         assert result["router1"]["show clock"] == "12:00:00"
 
-    def test_all_commands_failed_raises(self, library: RADKit) -> None:
+    def test_all_commands_failed_raises(self, library: RADKitLibrary) -> None:
         """Test that failure of all commands raises RADKitLibraryError."""
         mock_devices = MagicMock()
         mock_result = MagicMock()
@@ -77,7 +76,7 @@ class TestRadkitExecute:
         ):
             library.radkit_execute_sync("show version")
 
-    def test_raw_output(self, library: RADKit) -> None:
+    def test_raw_output(self, library: RADKitLibrary) -> None:
         """Test raw=True returns the raw RADKit result."""
         mock_devices = MagicMock()
         mock_result = MagicMock()
@@ -90,7 +89,7 @@ class TestRadkitExecute:
         result = library.radkit_execute_sync("show version", raw=True)
         assert result == mock_result
 
-    def test_custom_timeout(self, library: RADKit) -> None:
+    def test_custom_timeout(self, library: RADKitLibrary) -> None:
         """Test custom execution timeout is passed through."""
         mock_devices = MagicMock()
         mock_result = MagicMock()
@@ -101,7 +100,7 @@ class TestRadkitExecute:
         library.radkit_execute_sync("show version", exec_timeout=60)
         mock_devices.exec.assert_called_once_with("show version", timeout=60)
 
-    def test_no_devices_raises(self, library: RADKit) -> None:
+    def test_no_devices_raises(self, library: RADKitLibrary) -> None:
         """Test that missing devices raises ValueError."""
         library.selected_devices = None
         with pytest.raises(ValueError, match="no devices have been passed"):

@@ -12,7 +12,7 @@ from robot.api import logger
 from robot.api.deco import keyword
 from robot.utils import is_truthy
 
-from RADKit.base import RADKitLibraryError
+from ..base import RADKitLibraryError
 
 if typing.TYPE_CHECKING:
     from typing import Any

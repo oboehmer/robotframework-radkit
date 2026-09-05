@@ -12,8 +12,8 @@ import radkit_client.sync.port_forwarding
 from robot.api import logger
 from robot.api.deco import keyword
 
-from RADKit.base import RADKitLibraryError
-from RADKit.utils import is_ipv6_address
+from ..base import RADKitLibraryError
+from ..utils import is_ipv6_address
 
 if typing.TYPE_CHECKING:
     from typing import Any

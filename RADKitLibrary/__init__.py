@@ -9,8 +9,8 @@ devices, including authentication, device inventory, command execution,
 port forwarding, and Genie-based parsing.
 """
 
-from RADKit.base import Base, RADKitLibraryError
-from RADKit.keywords import (
+from .base import Base, RADKitLibraryError
+from .keywords import (
     ConnectionKeywords,
     DirectKeywords,
     ExecutionKeywords,
@@ -20,10 +20,10 @@ from RADKit.keywords import (
 )
 
 __version__ = "0.1.0"
-__all__ = ["RADKit", "RADKitLibraryError"]
+__all__ = ["RADKitLibrary", "RADKitLibraryError"]
 
 
-class RADKit(
+class RADKitLibrary(
     Base,
     ConnectionKeywords,
     DirectKeywords,
@@ -66,7 +66,7 @@ class RADKit(
 
     <pre>
     *** Settings ***
-    Library    RADKit
+    Library    RADKitLibrary
 
     *** Variables ***
     ${SERVICE_SN}    abcd-1234-efgh

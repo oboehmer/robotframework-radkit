@@ -29,7 +29,7 @@ pip install --extra-index-url https://radkit.cisco.com/pip robotframework-radkit
 
 ```robot
 *** Settings ***
-Library    RADKit
+Library    RADKitLibrary
 
 *** Variables ***
 ${SERVICE_SN}    abcd-1234-efgh
@@ -109,7 +109,7 @@ When `pyats.robot.pyATSRobot` is loaded in the test suite, the `RADKit Port Forw
 ```robot
 *** Settings ***
 Library    pyats.robot.pyATSRobot
-Library    RADKit
+Library    RADKitLibrary
 
 *** Test Cases ***
 Port Forward With Testbed Update
@@ -178,15 +178,15 @@ pre-commit install
 pytest tests/
 
 # Run unit tests only
-pytest tests/test_unit_*.py
+pytest tests/unit/test_unit_*.py
 
 # Run with coverage
-pytest --cov=RADKit tests/
+pytest --cov=RADKitLibrary tests/
 
 # Run linters
 ruff check .
 mypy .
-bandit -r RADKit/
+bandit -r RADKitLibrary/
 ```
 
 ### Code Quality

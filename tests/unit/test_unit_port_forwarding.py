@@ -8,15 +8,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 import radkit_client.sync.port_forwarding
 
-from RADKit import RADKit
-from RADKit.base import RADKitLibraryError
+from RADKitLibrary import RADKitLibrary, RADKitLibraryError
 
 
 @pytest.fixture
-def library() -> RADKit:
+def library() -> RADKitLibrary:
     """Create a RADKit library instance."""
-    with patch("RADKit.base.BuiltIn"):
-        lib = RADKit()
+    with patch("RADKitLibrary.base.BuiltIn"):
+        lib = RADKitLibrary()
         lib._client = MagicMock()
         return lib
 
@@ -24,7 +23,7 @@ def library() -> RADKit:
 class TestRadkitPortForward:
     """Tests for RADKit Port Forward to Device keyword."""
 
-    def test_port_forward_basic(self, library: RADKit) -> None:
+    def test_port_forward_basic(self, library: RADKitLibrary) -> None:
         """Test basic port forwarding setup."""
         mock_service = MagicMock()
         mock_device = MagicMock()
@@ -45,7 +44,7 @@ class TestRadkitPortForward:
         assert forwarder == mock_forwarder
         assert port == 8443
 
-    def test_port_forward_dynamic_port(self, library: RADKit) -> None:
+    def test_port_forward_dynamic_port(self, library: RADKitLibrary) -> None:
         """Test port forwarding with dynamic port (local_port=0)."""
         mock_service = MagicMock()
         mock_device = MagicMock()
@@ -69,7 +68,7 @@ class TestRadkitPortForward:
         )
         assert port == 54321
 
-    def test_unknown_device_raises(self, library: RADKit) -> None:
+    def test_unknown_device_raises(self, library: RADKitLibrary) -> None:
         """Test that unknown device raises RADKitLibraryError."""
         mock_service = MagicMock()
         # Use MagicMock for inventory to allow setting __getitem__
@@ -84,7 +83,7 @@ class TestRadkitPortForward:
                 "unknown_device", local_port=0, destination_port=22
             )
 
-    def test_testbed_device_without_pyats_raises(self, library: RADKit) -> None:
+    def test_testbed_device_without_pyats_raises(self, library: RADKitLibrary) -> None:
         """Test that testbed_device without pyATS raises RADKitLibraryError."""
         mock_service = MagicMock()
         mock_device = MagicMock()
@@ -111,7 +110,7 @@ class TestRadkitPortForward:
                 testbed_conn="cli",
             )
 
-    def test_testbed_conn_required(self, library: RADKit) -> None:
+    def test_testbed_conn_required(self, library: RADKitLibrary) -> None:
         """Test that testbed_conn is required when testbed_device is set."""
         mock_service = MagicMock()
         mock_service.inventory = {"server1": MagicMock()}
@@ -130,7 +129,7 @@ class TestRadkitPortForward:
 class TestRadkitStopPortForward:
     """Tests for RADKit Stop Port Forward keyword."""
 
-    def test_stop_port_forward(self, library: RADKit) -> None:
+    def test_stop_port_forward(self, library: RADKitLibrary) -> None:
         """Test stopping port forwarding."""
         mock_forwarder = MagicMock()
         library.radkit_stop_port_forward(mock_forwarder)

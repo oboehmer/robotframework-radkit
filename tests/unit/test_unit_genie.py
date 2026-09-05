@@ -9,15 +9,14 @@ import pytest
 import radkit_client.sync
 import radkit_genie
 
-from RADKit import RADKit
-from RADKit.base import RADKitLibraryError
+from RADKitLibrary import RADKitLibrary, RADKitLibraryError
 
 
 @pytest.fixture
-def library() -> RADKit:
+def library() -> RADKitLibrary:
     """Create a RADKit library instance."""
-    with patch("RADKit.base.BuiltIn"):
-        lib = RADKit()
+    with patch("RADKitLibrary.base.BuiltIn"):
+        lib = RADKitLibrary()
         lib._client = MagicMock()
         return lib
 
@@ -25,7 +24,7 @@ def library() -> RADKit:
 class TestRadkitGenieParse:
     """Tests for RADKit Genie Parse keyword."""
 
-    def test_parse_with_commands(self, library: RADKit) -> None:
+    def test_parse_with_commands(self, library: RADKitLibrary) -> None:
         """Test parsing with commands and devices."""
         mock_devices = MagicMock()
         mock_result = MagicMock()
@@ -51,7 +50,7 @@ class TestRadkitGenieParse:
 
         assert "router1" in result
 
-    def test_parse_with_raw_output(self, library: RADKit) -> None:
+    def test_parse_with_raw_output(self, library: RADKitLibrary) -> None:
         """Test parsing with raw output from previous execute."""
         # Create a mock that is an instance of ExecResponseBase
         mock_raw = MagicMock(spec=radkit_client.sync.ExecResponseBase)
@@ -68,7 +67,7 @@ class TestRadkitGenieParse:
 
         assert "router1" in result
 
-    def test_parse_commands_and_raw_raises(self, library: RADKit) -> None:
+    def test_parse_commands_and_raw_raises(self, library: RADKitLibrary) -> None:
         """Test that passing both commands and raw_output raises."""
         with pytest.raises(ValueError, match="either pass commands"):
             library.radkit_genie_parse(
@@ -76,7 +75,7 @@ class TestRadkitGenieParse:
                 raw_output=MagicMock(),
             )
 
-    def test_parse_invalid_raw_raises(self, library: RADKit) -> None:
+    def test_parse_invalid_raw_raises(self, library: RADKitLibrary) -> None:
         """Test that invalid raw_output type raises."""
         with pytest.raises(ValueError, match="not a raw RADKit result"):
             library.radkit_genie_parse(raw_output="not_a_result")
@@ -85,7 +84,7 @@ class TestRadkitGenieParse:
 class TestRadkitGenieLearn:
     """Tests for RADKit Genie Learn keyword."""
 
-    def test_learn_single_model(self, library: RADKit) -> None:
+    def test_learn_single_model(self, library: RADKitLibrary) -> None:
         """Test learning a single model."""
         mock_devices = MagicMock()
         library.selected_devices = mock_devices
@@ -98,7 +97,7 @@ class TestRadkitGenieLearn:
 
         assert "router1" in result
 
-    def test_learn_multiple_models(self, library: RADKit) -> None:
+    def test_learn_multiple_models(self, library: RADKitLibrary) -> None:
         """Test learning multiple models."""
         mock_devices = MagicMock()
         library.selected_devices = mock_devices
@@ -112,7 +111,7 @@ class TestRadkitGenieLearn:
         assert result["router1"]["routing"] == {}
         assert result["router1"]["platform"] == {}
 
-    def test_learn_invalid_models_type(self, library: RADKit) -> None:
+    def test_learn_invalid_models_type(self, library: RADKitLibrary) -> None:
         """Test that invalid models type raises ValueError."""
         library.selected_devices = MagicMock()
 
@@ -123,7 +122,7 @@ class TestRadkitGenieLearn:
 class TestRadkitGenieFingerprint:
     """Tests for RADKit Genie Fingerprint keyword."""
 
-    def test_fingerprint(self, library: RADKit) -> None:
+    def test_fingerprint(self, library: RADKitLibrary) -> None:
         """Test fingerprinting devices."""
         mock_devices = MagicMock()
         library.selected_devices = mock_devices
@@ -143,11 +142,11 @@ class TestGenieNotInstalled:
 
     def test_genie_parse_not_installed(self) -> None:
         """Test that Genie Parse raises when radkit_genie is not installed."""
-        with patch("RADKit.base.BuiltIn"):
-            lib = RADKit()
+        with patch("RADKitLibrary.base.BuiltIn"):
+            lib = RADKitLibrary()
             lib._client = MagicMock()
 
-            with patch("RADKit.keywords.genie.radkit_genie", None):
+            with patch("RADKitLibrary.keywords.genie.radkit_genie", None):
                 with pytest.raises(
                     RADKitLibraryError, match="cisco-radkit-genie is required"
                 ):

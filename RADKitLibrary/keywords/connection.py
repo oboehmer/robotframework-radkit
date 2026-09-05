@@ -14,7 +14,7 @@ import radkit_client.version
 from robot.api import logger
 from robot.api.deco import keyword
 
-from RADKit.base import RADKitLibraryError
+from ..base import RADKitLibraryError
 
 try:
     from robot.api.types import Secret

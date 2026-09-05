@@ -62,7 +62,7 @@ url = "https://radkit.cisco.com/pip"
 extra-index-url = ["https://radkit.cisco.com/pip"]
 
 [tool.coverage.run]
-source = ["RADKit"]
+source = ["RADKitLibrary"]
 
 [tool.coverage.report]
 exclude_lines = ["pragma: no cover", "@abstract", "except ImportError:"]
@@ -89,7 +89,7 @@ ignore = [
 "__init__.py" = ["F401"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["RADKit"]
+known-first-party = ["RADKitLibrary"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]
@@ -119,7 +119,7 @@ testpaths = ["tests"]
 addopts = "--ignore=tests/smoke"
 
 [tool.hatch.build.targets.wheel]
-packages = ["RADKit"]
+packages = ["RADKitLibrary"]
 
 [build-system]
 requires = ["hatchling"]

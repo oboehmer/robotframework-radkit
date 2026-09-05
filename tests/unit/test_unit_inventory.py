@@ -7,14 +7,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from RADKit import RADKit
+from RADKitLibrary import RADKitLibrary
 
 
 @pytest.fixture
-def library() -> RADKit:
+def library() -> RADKitLibrary:
     """Create a RADKit library instance."""
-    with patch("RADKit.base.BuiltIn"):
-        lib = RADKit()
+    with patch("RADKitLibrary.base.BuiltIn"):
+        lib = RADKitLibrary()
         lib._client = MagicMock()
         return lib
 
@@ -22,7 +22,7 @@ def library() -> RADKit:
 class TestRadkitDeviceInventory:
     """Tests for RADKit device inventory keyword."""
 
-    def test_returns_device_list(self, library: RADKit) -> None:
+    def test_returns_device_list(self, library: RADKitLibrary) -> None:
         """Test that inventory returns list of device names by default."""
         mock_service = MagicMock()
         mock_service.inventory.__iter__ = MagicMock(
@@ -34,7 +34,7 @@ class TestRadkitDeviceInventory:
         result = library.radkit_retrieve_inventory()
         assert result == ["router1", "router2", "switch1"]
 
-    def test_returns_raw_inventory(self, library: RADKit) -> None:
+    def test_returns_raw_inventory(self, library: RADKitLibrary) -> None:
         """Test that inventory returns DeviceDict when raw=True."""
         mock_service = MagicMock()
         mock_inventory = MagicMock()
@@ -45,7 +45,7 @@ class TestRadkitDeviceInventory:
         result = library.radkit_retrieve_inventory(raw=True)
         assert result == mock_inventory
 
-    def test_filter_inventory(self, library: RADKit) -> None:
+    def test_filter_inventory(self, library: RADKitLibrary) -> None:
         """Test inventory filtering."""
         mock_service = MagicMock()
         mock_filtered = MagicMock()
@@ -58,7 +58,7 @@ class TestRadkitDeviceInventory:
         mock_service.inventory.filter.assert_called_once_with("name", "PE.*")
         assert result == ["PE-router1"]
 
-    def test_update_inventory(self, library: RADKit) -> None:
+    def test_update_inventory(self, library: RADKitLibrary) -> None:
         """Test inventory update before fetch."""
         mock_service = MagicMock()
         mock_service.inventory.__iter__ = MagicMock(return_value=iter([]))
@@ -68,7 +68,7 @@ class TestRadkitDeviceInventory:
         library.radkit_retrieve_inventory(update=True)
         mock_service.update_inventory.assert_called_once()
 
-    def test_with_serial(self, library: RADKit) -> None:
+    def test_with_serial(self, library: RADKitLibrary) -> None:
         """Test inventory with specific service serial."""
         mock_service = MagicMock()
         mock_service.service_id = "test-serial"
@@ -86,7 +86,7 @@ class TestRadkitDeviceInventory:
 class TestRadkitSelectDevices:
     """Tests for RADKit select devices keyword."""
 
-    def test_select_devices_string(self, library: RADKit) -> None:
+    def test_select_devices_string(self, library: RADKitLibrary) -> None:
         """Test selecting devices from semicolon-separated string."""
         mock_service = MagicMock()
         mock_inventory = MagicMock()
@@ -101,7 +101,7 @@ class TestRadkitSelectDevices:
         assert result == mock_subset
         assert library.selected_devices == mock_subset
 
-    def test_select_devices_list(self, library: RADKit) -> None:
+    def test_select_devices_list(self, library: RADKitLibrary) -> None:
         """Test selecting devices from list."""
         mock_service = MagicMock()
         mock_inventory = MagicMock()

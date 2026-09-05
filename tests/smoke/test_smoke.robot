@@ -1,5 +1,5 @@
 *** Settings ***
-Library     RADKit
+Library     RADKitLibrary
 Library    Collections
 Library    String
 Library    OperatingSystem

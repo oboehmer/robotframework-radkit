@@ -10,15 +10,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 import radkit_client
 
-from RADKit import RADKit
-from RADKit.base import RADKitLibraryError
+from RADKitLibrary import RADKitLibrary, RADKitLibraryError
 
 
 @pytest.fixture
-def library() -> RADKit:
+def library() -> RADKitLibrary:
     """Create a RADKit library instance."""
-    with patch("RADKit.base.BuiltIn"):
-        lib = RADKit()
+    with patch("RADKitLibrary.base.BuiltIn"):
+        lib = RADKitLibrary()
         lib._client = MagicMock()
         return lib
 
@@ -26,7 +25,7 @@ def library() -> RADKit:
 class TestRadkitClientVersion:
     """Tests for RADKit Client Version keyword."""
 
-    def test_returns_version_string(self, library: RADKit) -> None:
+    def test_returns_version_string(self, library: RADKitLibrary) -> None:
         """Test that version string is returned."""
         with patch("radkit_client.version.version_str", "1.9.6"):
             result = library.radkit_client_version()
@@ -36,7 +35,7 @@ class TestRadkitClientVersion:
 class TestRadkitCertificateLogin:
     """Tests for RADKit certificate login keyword."""
 
-    def test_already_connected_returns_client(self, library: RADKit) -> None:
+    def test_already_connected_returns_client(self, library: RADKitLibrary) -> None:
         """Test that already connected identity returns existing client."""
         mock_conn = MagicMock()
         mock_conn.client_id = "user@cisco.com"
@@ -51,7 +50,7 @@ class TestRadkitCertificateLogin:
         )
         assert result == library.client
 
-    def test_missing_password_raises(self, library: RADKit) -> None:
+    def test_missing_password_raises(self, library: RADKitLibrary) -> None:
         """Test that missing password raises RADKitLibraryError."""
         library.client.cloud_connections.values.return_value = []
 
@@ -61,7 +60,7 @@ class TestRadkitCertificateLogin:
             ):
                 library.radkit_certificate_login(identity="user@cisco.com")
 
-    def test_password_from_env_base64(self, library: RADKit) -> None:
+    def test_password_from_env_base64(self, library: RADKitLibrary) -> None:
         """Test password resolution from base64 env var."""
         password = "my_secret"
         b64_password = base64.b64encode(password.encode()).decode()
@@ -78,7 +77,7 @@ class TestRadkitCertificateLogin:
             call_kwargs = library.client.certificate_login.call_args[1]
             assert call_kwargs["private_key_password"] == password
 
-    def test_password_from_env_cleartext(self, library: RADKit) -> None:
+    def test_password_from_env_cleartext(self, library: RADKitLibrary) -> None:
         """Test password resolution from cleartext env var."""
         library.client.cloud_connections.values.return_value = []
 
@@ -91,7 +90,7 @@ class TestRadkitCertificateLogin:
             call_kwargs = library.client.certificate_login.call_args[1]
             assert call_kwargs["private_key_password"] == "cleartext_pw"
 
-    def test_password_literal_string_rejected(self, library: RADKit) -> None:
+    def test_password_literal_string_rejected(self, library: RADKitLibrary) -> None:
         """Test that passing a literal password string raises RADKitLibraryError."""
         library.client.cloud_connections.values.return_value = []
 
@@ -105,7 +104,7 @@ class TestRadkitCertificateLogin:
                     private_key_password="literal_password_value",
                 )
 
-    def test_password_from_named_env_var_argument(self, library: RADKit) -> None:
+    def test_password_from_named_env_var_argument(self, library: RADKitLibrary) -> None:
         """Test password resolution when passing env var name as argument."""
         library.client.cloud_connections.values.return_value = []
 
@@ -121,7 +120,7 @@ class TestRadkitCertificateLogin:
             call_kwargs = library.client.certificate_login.call_args[1]
             assert call_kwargs["private_key_password"] == "secret_from_env"
 
-    def test_password_from_secret_type(self, library: RADKit) -> None:
+    def test_password_from_secret_type(self, library: RADKitLibrary) -> None:
         """Test password resolution when passing a Robot Framework Secret."""
         from robot.api.types import Secret
 
@@ -135,7 +134,7 @@ class TestRadkitCertificateLogin:
             call_kwargs = library.client.certificate_login.call_args[1]
             assert call_kwargs["private_key_password"] == "s3cret"
 
-    def test_sets_current_identity(self, library: RADKit) -> None:
+    def test_sets_current_identity(self, library: RADKitLibrary) -> None:
         """Test that current_identity is set after login."""
         library.client.cloud_connections.values.return_value = []
 
@@ -146,7 +145,7 @@ class TestRadkitCertificateLogin:
             )
         assert library.current_identity == "user@cisco.com"
 
-    def test_env_paths_used_as_defaults(self, library: RADKit) -> None:
+    def test_env_paths_used_as_defaults(self, library: RADKitLibrary) -> None:
         """Test that RADKIT_* env vars are used as fallback for paths/identity."""
         library.client.cloud_connections.values.return_value = []
 
@@ -172,7 +171,7 @@ class TestRadkitCertificateLogin:
             domain="domain",
         )
 
-    def test_explicit_args_override_env_paths(self, library: RADKit) -> None:
+    def test_explicit_args_override_env_paths(self, library: RADKitLibrary) -> None:
         """Test that explicit keyword args take precedence over env vars."""
         library.client.cloud_connections.values.return_value = []
 
@@ -206,7 +205,7 @@ class TestRadkitCertificateLogin:
 class TestRadkitDisconnect:
     """Tests for RADKit disconnect keyword."""
 
-    def test_disconnect_all(self, library: RADKit) -> None:
+    def test_disconnect_all(self, library: RADKitLibrary) -> None:
         """Test disconnecting all connections."""
         conn1 = MagicMock()
         conn2 = MagicMock()
@@ -222,7 +221,7 @@ class TestRadkitDisconnect:
         conn1.logout.assert_called_once()
         conn2.logout.assert_called_once()
 
-    def test_disconnect_by_identity(self, library: RADKit) -> None:
+    def test_disconnect_by_identity(self, library: RADKitLibrary) -> None:
         """Test disconnecting a specific identity."""
         conn = MagicMock()
         conn.client_id = "user@cisco.com"
@@ -234,7 +233,7 @@ class TestRadkitDisconnect:
         library.radkit_disconnect(identity="user@cisco.com")
         conn.logout.assert_called_once()
 
-    def test_disconnect_no_connections(self, library: RADKit) -> None:
+    def test_disconnect_no_connections(self, library: RADKitLibrary) -> None:
         """Test disconnect when no connections exist."""
         library.client.cloud_connections.values.return_value = []
         library.client.cloud_connections.__len__ = MagicMock(return_value=0)
@@ -245,7 +244,7 @@ class TestRadkitDisconnect:
 class TestRadkitSelectService:
     """Tests for RADKit select service keyword."""
 
-    def test_select_existing_service(self, library: RADKit) -> None:
+    def test_select_existing_service(self, library: RADKitLibrary) -> None:
         """Test selecting an already connected service."""
         mock_service = MagicMock()
         mock_service.service_id = "abcd-1234-efgh"
@@ -260,7 +259,7 @@ class TestRadkitSelectService:
         assert result == mock_service
         assert library.current_service == mock_service
 
-    def test_select_new_service(self, library: RADKit) -> None:
+    def test_select_new_service(self, library: RADKitLibrary) -> None:
         """Test connecting to a new service."""
         library.client.services.values.return_value = []
         library.current_identity = "user@cisco.com"
@@ -282,14 +281,14 @@ class TestRadkitSelectService:
 class TestRadkitTimeout:
     """Tests for RADKit timeout keyword."""
 
-    def test_set_timeout(self, library: RADKit) -> None:
+    def test_set_timeout(self, library: RADKitLibrary) -> None:
         """Test setting timeout returns old value."""
         assert library.radkit_timeout == 300
         old = library.set_radkit_timeout(60)
         assert old == 300
         assert library.radkit_timeout == 60
 
-    def test_set_timeout_string(self, library: RADKit) -> None:
+    def test_set_timeout_string(self, library: RADKitLibrary) -> None:
         """Test setting timeout with string value."""
         library.set_radkit_timeout("120")
         assert library.radkit_timeout == 120
