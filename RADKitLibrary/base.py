@@ -9,7 +9,7 @@ import os
 import typing
 from contextlib import ExitStack
 
-import radkit_client as rc
+import radkit_client
 from robot.libraries.BuiltIn import BuiltIn
 
 from .utils import is_cloud_connected_service
@@ -76,7 +76,7 @@ class Base:
 
     def _create_client(self) -> Any:
         """Create a radkit_client.Client via ExitStack context manager."""
-        return self._exitstack.enter_context(rc.Client.create())
+        return self._exitstack.enter_context(radkit_client.Client.create())
 
     def _close(self) -> None:
         """Robot listener hook: clean up on library teardown."""
