@@ -30,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
     "robotframework>=5.0",
-    "cisco-radkit-client~=1.9.0",
+    "cisco-radkit-client>=1.9.0",
 ]
 
 [project.urls]
@@ -41,7 +41,7 @@ issues = "https://github.com/oboehmer/robotframework-radkit/issues"
 
 [project.optional-dependencies]
 genie = [
-    "cisco-radkit-genie~=1.9.0",
+    "cisco-radkit-genie>=1.9.0",
 ]
 dev = [
     "bandit[toml]>=1.8.6",
