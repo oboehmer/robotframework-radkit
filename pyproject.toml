@@ -30,7 +30,8 @@ classifiers = [
 ]
 dependencies = [
     "robotframework>=5.0",
-    "cisco-radkit-client>=1.9.0",
+    "cisco-radkit-client>=1.9.0; python_version < '3.14'",
+    "cisco-radkit-client>=2.0.0; python_version >= '3.14'",
 ]
 
 [project.urls]
@@ -41,7 +42,8 @@ issues = "https://github.com/oboehmer/robotframework-radkit/issues"
 
 [project.optional-dependencies]
 genie = [
-    "cisco-radkit-genie>=1.9.0",
+    "cisco-radkit-genie>=1.9.0; python_version < '3.14'",
+    "cisco-radkit-genie>=2.0.0; python_version >= '3.14'",
 ]
 dev = [
     "bandit[toml]>=1.8.6",
@@ -62,7 +64,13 @@ url = "https://radkit.cisco.com/pip"
 extra-index-url = ["https://radkit.cisco.com/pip"]
 
 [tool.coverage.run]
-source = ["RADKitLibrary"]
+source_pkgs = ["RADKitLibrary"]
+
+[tool.coverage.paths]
+source = [
+    "RADKitLibrary",
+    "*/site-packages/RADKitLibrary",
+]
 
 [tool.coverage.report]
 exclude_lines = ["pragma: no cover", "@abstract", "except ImportError:"]
