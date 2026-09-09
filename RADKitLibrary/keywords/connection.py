@@ -75,7 +75,7 @@ class ConnectionKeywords:
                     containing the password. When not provided, falls back to
                     env var RADKIT_CLIENT_PRIVATE_KEY_PASSWORD_BASE64 (base64)
                     or RADKIT_CLIENT_PRIVATE_KEY_PASSWORD (cleartext).</li>
-                <li><code>domain</code>: RADKit domain (defaults to PROD)</li>
+                <li><code>domain</code>: RADKit domain (defaults to radkit-client's default domain, PROD in 1.x, IQ_CLOUD in 2.x)</li>
             </ul>
 
             <p><strong>Returns:</strong> RADKit client object</p>
@@ -98,7 +98,6 @@ class ConnectionKeywords:
             </pre>
         """
         identity = identity or os.environ.get("RADKIT_IDENTITY")
-        domain = domain or "PROD"
 
         # Check if already connected with same identity/domain
         try:
