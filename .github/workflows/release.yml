@@ -18,6 +18,9 @@ jobs:
     name: Build and Publish to PyPI
     needs: [test]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Explicitly required for OIDC token minting
+      contents: write # Required for creating GitHub releases
     environment:
       name: pypi
       url: https://pypi.org/p/robotframework-radkit
@@ -34,12 +37,7 @@ jobs:
         run: uv build
 
       - name: Publish package to PyPI
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
-        run: |
-          # uv automatically uses Trusted Publishing (OIDC) if available,
-          # or falls back to UV_PUBLISH_TOKEN if configured as a secret.
-          uv publish
+        uses: pypa/gh-action-pypi-publish@release/v1
 
       - name: Create GitHub Release
         env:
