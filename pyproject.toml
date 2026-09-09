@@ -1,6 +1,6 @@
 [project]
 name = "robotframework-radkit"
-version = "0.1.0"
+version = "0.1.0rc1"
 description = "A Robot Framework library for Cisco RADKit, providing keywords for device interaction via RADKit services"
 license = { text = "MPL-2.0" }
 readme = "README.md"
